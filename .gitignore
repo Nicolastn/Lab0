@@ -20,3 +20,5 @@ nbproject/project.xml
 nbproject/Package-default.bash
 Makefile
 build/default/debug/_ext/1472/lab0.o
+build/default/production/lab0.o
+build/default/production/lab0.o.d

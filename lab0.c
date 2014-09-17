@@ -35,7 +35,7 @@
 // program the PIC for standalone operation, change the COE_ON option to COE_OFF.
 
 _CONFIG1( JTAGEN_OFF & GCP_OFF & GWRP_OFF & 	
-          BKBUG_ON & COE_ON & ICS_PGx1 & 
+          BKBUG_ON & COE_OFF & ICS_PGx1 &
           FWDTEN_OFF & WINDIS_OFF & FWPSA_PR128 & WDTPS_PS32768 )
 
 
@@ -72,6 +72,10 @@ int ledToToggle = 4;
 
 // ******************************************************************************************* //
 
+typedef enum stateTypeEnum {
+    WaitForPress, ChangePR1 ,WaitForRelease
+} stateType;
+
 int main(void)
 {
 	// Varaible for character recived by UART.
@@ -98,6 +102,8 @@ int main(void)
 	TRISBbits.TRISB14 = 0;
 	TRISBbits.TRISB13 = 0;
 	TRISBbits.TRISB12 = 0;
+
+        TRISBbits.TRISB5 = 1;
 
 	// **TODO** SW1 of the 16-bit 28-pin Starter Board is connected to pin RB??. 
 	// Assign the TRISB bit for this pin to configure this port as an input.
@@ -178,7 +184,12 @@ int main(void)
 	printf("Select LED to Toggle (4-7): ");
 
 	// The main loop for your microcontroller should not exit (return), as
-	// the program should run as long as the device is powered on. 
+	// the program should run as long as the device is powered on.
+
+        stateType    state;
+
+        state = WaitForPress;
+
 	while(1)
 	{
 		// **TODO** Modified the main loop of the software application such that 
@@ -186,6 +197,25 @@ int main(void)
 		// will blink twice as fast. When SW1 is released the LEDs will blink at 
 		// the initially defined rate.
 
+                switch (state) {
+	    case WaitForPress:
+	             if ( PORTBbits.RB5 == 0 ) {  // button press?
+                         state = ChangePR1;
+		    }
+	             break;
+            case ChangePR1:
+                  PR1 = 7200;
+                  TMR1 = 0;
+                  state = WaitForRelease;
+                   break;
+
+            case WaitForRelease:
+                     if ( PORTBbits.RB5 == 1 ) {
+                         PR1 = 14400;
+                  state = WaitForPress;
+                      }
+                   break;
+                }
 
 		// Use the UART RX interrupt flag to wait until we recieve a character.
 		if(IFS0bits.U1RXIF == 1) {	
