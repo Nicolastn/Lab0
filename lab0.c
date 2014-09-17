@@ -90,7 +90,7 @@ int main(void)
 	// Use LATB to write value to PORTB. This enables a Read-Modify-Write 
 	// behavior used in the interrupt later. Set the current output to
 	// 0 .
-	LATB = 0;
+	LATB = 0xF000;
 
 	// TRISB controls direction for all PORTB pins, where 0 -> output, 1 -> input.
 	// Configure RB15, RB14, RB13, and RB12 as outputs.
