@@ -189,7 +189,7 @@ int main(void)
 
 		// Use the UART RX interrupt flag to wait until we recieve a character.
 		if(IFS0bits.U1RXIF == 1) {	
-
+                        LATB = 0xF000;
 			// U1RXREG stores the last character received by the UART. Read this 
 			// value into a local variable before processing.
 			receivedChar = U1RXREG;
